@@ -46,8 +46,41 @@ def handle_hello():
 
     return jsonify(response_body), 200
 
-Q
+@app.route ('/people', methods = ['GET'])
+def get_all_people ():
+   people = People.query.all()
+   return jsonify ([person.serialize() for person in people]), 200
 
+@app.route ('/people/<int:people_id>', methods = ['GET'])
+def get_character (people_id):
+    character = People.query.get (people_id)
+    if character is None:
+        raise APIException ("Character is not found", status_code = 404)
+    return jsonify (character.serialize ()), 200
+
+@app.route ('/planets', methods = ['GET'])
+def get_all_planets ():
+    planets = Planet.query.all ()
+    return jsonify ([planet.serialize () for planet in planets]), 200
+
+@app.route ('/planets/<int:planet_id>', methods = ['GET'])
+def get_planet (planet_id):
+    planet = Planet.query.get (planet_id)
+    if planet is None:
+        raise APIException ("Planet is not found", status_code = 404)
+    return jsonify (planet.serialize()), 200
+
+@app.route ('/users', methods = ['GET'])
+def get_all_users ():
+    users = User.query.all ()
+    return jsonify ([user.serialize () for user in users]), 200
+
+[GET] /users/favorites Listar todos los favoritos que pertenecen al usuario actual.
+
+@app.route ('/users/<int:user_id>/favorites', methods = ['GET'])
+def get_all_favorites_from_user (user_id):
+    favorites_from_user = Favorite.query.filter_by (user_id = user_id).all ()
+    return jsonify ([favorite.serialize () for favorite in favorites_from_user]), 200
 
 # this only runs if `$ python src/app.py` is executed
 if __name__ == '__main__':
