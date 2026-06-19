@@ -99,13 +99,13 @@ class Favorite (db.Model):
     user_id: Mapped [int]= mapped_column (ForeignKey ("user.id"))
     user: Mapped [User] = relationship ()
 
-    people_id: Mapped [int] = mapped_column (ForeignKey ("people.id"))
+    people_id: Mapped [int] = mapped_column (ForeignKey ("people.id"), nullable=True)
     people: Mapped [People] = relationship ()
 
-    planet_id: Mapped [int] = mapped_column (ForeignKey ("planet.id"))
+    planet_id: Mapped [int] = mapped_column (ForeignKey ("planet.id"), nullable=True)
     planet: Mapped [Planet] = relationship ()
 
-    vehicle_id: Mapped [int] = mapped_column (ForeignKey ("vehicle.id"))
+    vehicle_id: Mapped [int] = mapped_column (ForeignKey ("vehicle.id"), nullable=True)
     vehicle: Mapped [Vehicle] = relationship ()
 
     def serialize(self):

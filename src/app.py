@@ -75,12 +75,92 @@ def get_all_users ():
     users = User.query.all ()
     return jsonify ([user.serialize () for user in users]), 200
 
-[GET] /users/favorites Listar todos los favoritos que pertenecen al usuario actual.
-
 @app.route ('/users/<int:user_id>/favorites', methods = ['GET'])
 def get_all_favorites_from_user (user_id):
     favorites_from_user = Favorite.query.filter_by (user_id = user_id).all ()
     return jsonify ([favorite.serialize () for favorite in favorites_from_user]), 200
+
+@app.route ('/favorite/planet/<int:planet_id>', methods = ['POST'])
+def add_favorite_planet (planet_id):
+    planet = Planet.query.get (planet_id)
+
+    if planet is None:
+        raise APIException ('Planet not found', status_code = 404)
+
+    new_favorite = Favorite (user_id = 1, planet_id = planet_id)
+
+    try:
+        db.session.add (new_favorite)
+        db.session.commit ()
+    
+    except Exception as e:
+        raise APIException (f"Failed to add planet to favorites", status_code = 500) from e
+
+    return jsonify ({
+        "msg": "Planet was added succesfully",
+        "favorite": new_favorite.serialize ()
+    }), 201
+
+@app.route ('/favorite/people/<int:people_id>', methods = ['POST'])
+def add_favorite_people (people_id):
+    character = People.query.get (people_id)
+
+    if character is None:
+        raise APIException ('Character not found', status_code = 404)
+
+    new_favorite = Favorite (user_id = 1, people_id = people_id)
+
+    try:
+        db.session.add (new_favorite)
+        db.session.commit ()
+    
+    except Exception as e:
+        raise APIException (f"Failed to add character to favorites", status_code = 500) from e
+
+    return jsonify ({
+        "msg": "Character was added succesfully",
+        "favorite": new_favorite.serialize ()
+    }), 201
+
+@app.route ('/favorite/planet/<int:planet_id>', methods = ['DELETE'])
+def delete_favorite_planet (planet_id):
+    searched_favorite_planet = Favorite.query.filter_by (planet_id = planet_id, user_id = 1).first()
+
+    if not searched_favorite_planet:
+        raise APIException (f"Favorite planet is not found", status_code = 404)
+    
+    try:
+        db.session.delete (searched_favorite_planet)
+        db.session.commit ()
+    
+    except Exception as e:
+        raise APIException (f"Something wrong happened", status_code = 500) from e
+
+    return jsonify({
+        "msg": "Favorite planet deleted"
+    }), 200
+
+
+[DELETE] /favorite/people/<int:people_id> Elimina un people favorito con el id = people_id.
+
+@app.route ('/favorite/people/<int:people_id>', methods = ['DELETE'])
+def delete_favorite_people (people_id):
+    searched_favorite_people = Favorite.query.filter_by (people_id = people_id, user_id = 1).first()
+
+    if not searched_favorite_people:
+        raise APIException (f"Favorite character not found", status_code = 404)
+    
+    try:
+        db.session.delete (searched_favorite_people)
+        db.session.commit ()
+    
+    except Exception as e:
+        raise APIException (f"Something wrong happened", status_code = 500) from e
+
+    return jsonify({
+        "msg": "Favorite character deleted"
+    }), 200
+
 
 # this only runs if `$ python src/app.py` is executed
 if __name__ == '__main__':
