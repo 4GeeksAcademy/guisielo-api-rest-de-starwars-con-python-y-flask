@@ -140,9 +140,6 @@ def delete_favorite_planet (planet_id):
         "msg": "Favorite planet deleted"
     }), 200
 
-
-[DELETE] /favorite/people/<int:people_id> Elimina un people favorito con el id = people_id.
-
 @app.route ('/favorite/people/<int:people_id>', methods = ['DELETE'])
 def delete_favorite_people (people_id):
     searched_favorite_people = Favorite.query.filter_by (people_id = people_id, user_id = 1).first()
